@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FCA PRO — Mert Kömür Career Mode</title>
+    <title>FCA PRO — Mert Kömür 3D Career Mode</title>
     <script src="https://cdn.babylonjs.com/babylon.js"></script>
     <script src="https://cdn.babylonjs.com/materials/babylonjs.materials.min.js"></script>
     <script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
@@ -21,33 +21,22 @@
             overflow: hidden;
         }
 
-        .container {
-            width: 100vw;
-            height: 100vh;
-            display: flex;
-        }
-
-        .game-view {
-            flex: 1;
-            position: relative;
-        }
-
-        #renderCanvas {
-            width: 100%;
-            height: 100%;
-            display: block;
-        }
-
         .split-layout {
             display: flex;
-            width: 100%;
-            height: 100%;
+            width: 100vw;
+            height: 100vh;
         }
 
         .game-section {
             flex: 1;
             position: relative;
             min-width: 0;
+        }
+
+        #gameCanvas {
+            width: 100%;
+            height: 100%;
+            display: block;
         }
 
         .editor-section {
@@ -168,6 +157,30 @@
             border-color: #d5ae5b;
         }
 
+        .pose-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .pose-btn {
+            padding: 8px;
+            border: 1px solid #355067;
+            background: #112335;
+            color: #d5ae5b;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 11px;
+            transition: all 0.2s;
+        }
+
+        .pose-btn:hover {
+            background: #1a3d52;
+            border-color: #d5ae5b;
+        }
+
         .color-picker {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
@@ -181,7 +194,6 @@
             border: 2px solid transparent;
             cursor: pointer;
             transition: all 0.2s;
-            position: relative;
         }
 
         .color-option:hover {
@@ -192,13 +204,6 @@
             border-color: #d5ae5b;
             box-shadow: 0 0 10px #d5ae5b;
         }
-
-        .color-option.black { background: #1a1a1a; }
-        .color-option.white { background: #f5f5f5; }
-        .color-option.gold { background: #d4af37; }
-        .color-option.red { background: #c41e3a; }
-        .color-option.navy { background: #0a1e3d; }
-        .color-option.burgundy { background: #8e1f30; }
 
         .stats-grid {
             display: grid;
@@ -294,33 +299,18 @@
             max-width: 800px;
         }
 
-        .cutscene-video {
-            width: 100%;
-            max-width: 600px;
-            aspect-ratio: 16/9;
-            background: #0a1420;
-            border-radius: 16px;
-            border: 2px solid #d5ae5b;
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 48px;
-            overflow: hidden;
-        }
-
-        .cutscene-text {
-            font-size: 18px;
-            color: #edf5ff;
-            margin-bottom: 20px;
-            line-height: 1.6;
-        }
-
         .cutscene-title {
             font-size: 28px;
             font-weight: 900;
             color: #d5ae5b;
             margin-bottom: 10px;
+        }
+
+        .cutscene-text {
+            font-size: 16px;
+            color: #9fb1c3;
+            margin-bottom: 20px;
+            line-height: 1.6;
         }
 
         .cutscene-button {
@@ -342,69 +332,56 @@
 
         .match-hud {
             position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            padding: 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            pointer-events: none;
-            z-index: 20;
-        }
-
-        .match-info {
+            top: 20px;
+            left: 20px;
             background: rgba(8, 19, 31, 0.9);
             border: 2px solid #d5ae5b;
             border-radius: 12px;
-            padding: 12px 20px;
+            padding: 15px 20px;
             pointer-events: auto;
+            display: none;
+            z-index: 20;
         }
 
-        .match-info h2 {
+        .match-hud.active {
+            display: block;
+        }
+
+        .match-hud h2 {
             font-size: 24px;
             font-weight: 900;
             color: #d5ae5b;
         }
 
-        .match-info p {
+        .match-hud p {
             font-size: 12px;
             color: #9fb1c3;
             margin-top: 5px;
         }
 
-        .match-stats {
+        .action-indicator {
             position: absolute;
             bottom: 20px;
-            left: 20px;
-            right: 20px;
-            background: rgba(8, 19, 31, 0.9);
-            border: 2px solid #d5ae5b;
-            border-radius: 12px;
-            padding: 15px;
-            pointer-events: auto;
-            max-width: 400px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(213, 174, 91, 0.9);
+            color: #111;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-weight: 900;
+            text-align: center;
+            pointer-events: none;
+            animation: pulse 1s infinite;
+            display: none;
         }
 
-        .match-stat-row {
-            display: flex;
-            justify-content: space-between;
-            padding: 8px 0;
-            border-bottom: 1px solid #263f54;
-            font-size: 12px;
+        .action-indicator.active {
+            display: block;
         }
 
-        .match-stat-row:last-child {
-            border-bottom: none;
-        }
-
-        .match-stat-label {
-            color: #9fb1c3;
-        }
-
-        .match-stat-value {
-            color: #d5ae5b;
-            font-weight: bold;
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
         }
 
         @media (max-width: 1200px) {
@@ -429,58 +406,18 @@
                 height: 60%;
             }
         }
-
-        .action-indicator {
-            position: absolute;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(213, 174, 91, 0.9);
-            color: #111;
-            padding: 12px 20px;
-            border-radius: 8px;
-            font-weight: 900;
-            text-align: center;
-            pointer-events: none;
-            animation: pulse 1s infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.7; }
-        }
     </style>
 </head>
 <body>
     <div class="split-layout">
         <div class="game-section">
-            <canvas id="renderCanvas"></canvas>
-            <div class="match-hud" id="matchHUD" style="display: none;">
-                <div class="match-info">
-                    <h2 id="scoreboard">FCA 0 : 0 OPP</h2>
-                    <p id="matchTime">00:00 / 90:00</p>
-                </div>
+            <canvas id="gameCanvas"></canvas>
+            <div class="match-hud" id="matchHUD">
+                <h2 id="scoreboard">FCA 0 : 0 OPP</h2>
+                <p id="matchTime">00:00 / 90:00</p>
             </div>
-            <div class="match-stats" id="matchStats" style="display: none;">
-                <div class="match-stat-row">
-                    <span class="match-stat-label">Deine Tore</span>
-                    <span class="match-stat-value" id="playerGoals">0</span>
-                </div>
-                <div class="match-stat-row">
-                    <span class="match-stat-label">Assists</span>
-                    <span class="match-stat-value" id="playerAssists">0</span>
-                </div>
-                <div class="match-stat-row">
-                    <span class="match-stat-label">Ballkontakte</span>
-                    <span class="match-stat-value" id="playerTouches">0</span>
-                </div>
-                <div class="match-stat-row">
-                    <span class="match-stat-label">Pass-Quote</span>
-                    <span class="match-stat-value" id="playerPasses">0%</span>
-                </div>
-            </div>
-            <div class="action-indicator" id="actionIndicator" style="display: none;">
-                Drücke SPACE zum Schießen | E zum Passen
+            <div class="action-indicator" id="actionIndicator">
+                SPACE = Schuss | E = Pass | WASD = Bewegen
             </div>
         </div>
 
@@ -488,6 +425,21 @@
             <div class="header">
                 <h1>⚙️ SPIELER EDITOR</h1>
                 <p id="phaseText">Locker Room - Passe dich an</p>
+            </div>
+
+            <div class="control-panel">
+                <h3>👀 Avatar Kontrolle</h3>
+                <div class="rotation-controls">
+                    <button class="rotation-btn" onclick="rotatePlayer(-Math.PI/6)">◀ Links</button>
+                    <button class="rotation-btn" onclick="rotatePlayer(0)">🔄 Front</button>
+                    <button class="rotation-btn" onclick="rotatePlayer(Math.PI/6)">Rechts ▶</button>
+                </div>
+                <div class="pose-buttons">
+                    <button class="pose-btn" onclick="setPlayerPose('idle')">😐 Stehen</button>
+                    <button class="pose-btn" onclick="setPlayerPose('celebration')">🎉 Jubel</button>
+                    <button class="pose-btn" onclick="setPlayerPose('warmup')">🔥 Aufwärmen</button>
+                    <button class="pose-btn" onclick="setPlayerPose('pass')">🤝 Pass</button>
+                </div>
             </div>
 
             <div class="control-panel">
@@ -502,22 +454,26 @@
                     </select>
                 </div>
                 <div class="control-group">
-                    <label>Farbe</label>
+                    <label>Schuh Farbe</label>
                     <div class="color-picker">
-                        <div class="color-option black active" onclick="setShoeColor('black')" style="background: #1a1a1a;"></div>
-                        <div class="color-option white" onclick="setShoeColor('white')" style="background: #f5f5f5; border: 1px solid #ccc;"></div>
-                        <div class="color-option gold" onclick="setShoeColor('gold')" style="background: #d4af37;"></div>
-                        <div class="color-option red" onclick="setShoeColor('red')" style="background: #c41e3a;"></div>
+                        <div class="color-option active" onclick="setShoeColor('black')" style="background: #1a1a1a;"></div>
+                        <div class="color-option" onclick="setShoeColor('white')" style="background: #f5f5f5; border: 1px solid #ccc;"></div>
+                        <div class="color-option" onclick="setShoeColor('gold')" style="background: #d4af37;"></div>
+                        <div class="color-option" onclick="setShoeColor('red')" style="background: #c41e3a;"></div>
                     </div>
                 </div>
             </div>
 
             <div class="control-panel">
-                <h3>🎮 Avatar Kontrolle</h3>
-                <div class="rotation-controls">
-                    <button class="rotation-btn" onclick="rotatePlayer(-Math.PI/6)">◀ Links</button>
-                    <button class="rotation-btn" onclick="rotatePlayer(0)">🔄 Front</button>
-                    <button class="rotation-btn" onclick="rotatePlayer(Math.PI/6)">Rechts ▶</button>
+                <h3>👕 Ausrüstung</h3>
+                <div class="control-group">
+                    <label>Trikot</label>
+                    <select id="jerseyType" onchange="updateJersey()">
+                        <option value="home">Heimtrikot (Weiß)</option>
+                        <option value="away">Auswärtstrikot (Blau)</option>
+                        <option value="prematch">Prematch (Schwarz)</option>
+                        <option value="training">Training (Weinrot)</option>
+                    </select>
                 </div>
             </div>
 
@@ -553,8 +509,7 @@
 
     <div class="cutscene" id="cutscene">
         <div class="cutscene-content">
-            <div class="cutscene-video" id="cutsceneVideo">🎬</div>
-            <div class="cutscene-title" id="cutsceneTitle">Ankunft</div>
+            <div class="cutscene-title" id="cutsceneTitle">🎬 Ankunft</div>
             <div class="cutscene-text" id="cutsceneText">Du kommst im Trainingszentrum an...</div>
             <button class="cutscene-button" onclick="skipCutscene()">Weiter →</button>
         </div>
@@ -562,32 +517,31 @@
 
     <script>
         const gameState = {
-            phase: 'lockerroom', // lockerroom, warmup, match, postgame
+            phase: 'lockerroom',
             playerRotation: 0,
+            playerPose: 'idle',
             currentShoes: 'adidas-speed',
             currentShoeColor: 'black',
+            currentJersey: 'home',
             fitness: 84,
             form: 78,
             tactics: 72,
             chemistry: 70,
             goals: 0,
             assists: 0,
-            touches: 0,
-            passes: 0,
-            passAccuracy: 85,
             matchTime: 0,
             matchDuration: 90,
             isPlaying: false,
             keys: {}
         };
 
-        let scene, camera, player, engine, canvas;
-        let playerMeshes = {};
+        let scene, camera, engine, canvas;
+        let playerGroup, playerHead, playerBody, playerJersey, playerLeftShoe, playerRightShoe;
         let matchAnimationId;
 
         // Initialize Babylon.js
         async function initScene() {
-            canvas = document.getElementById('renderCanvas');
+            canvas = document.getElementById('gameCanvas');
             engine = new BABYLON.Engine(canvas, true);
             scene = new BABYLON.Scene(engine);
             scene.clearColor = new BABYLON.Color3(0.02, 0.04, 0.07);
@@ -601,31 +555,35 @@
             camera.minZ = 0.1;
             camera.maxZ = 1000;
 
-            // Lights
+            // Lights - Professional lighting setup
             const ambientLight = new BABYLON.HemisphericLight('ambientLight', new BABYLON.Vector3(1, 1, 1), scene);
-            ambientLight.intensity = 0.8;
+            ambientLight.intensity = 0.9;
 
-            const pointLight = new BABYLON.PointLight('pointLight', new BABYLON.Vector3(5, 5, 5), scene);
-            pointLight.intensity = 0.6;
-            pointLight.range = 30;
+            const keyLight = new BABYLON.PointLight('keyLight', new BABYLON.Vector3(5, 5, 5), scene);
+            keyLight.intensity = 0.8;
+            keyLight.range = 50;
 
-            const spotLight = new BABYLON.SpotLight('spotLight', new BABYLON.Vector3(0, 6, 0), new BABYLON.Vector3(0, -1, 0), Math.PI / 3, 2, scene);
+            const fillLight = new BABYLON.PointLight('fillLight', new BABYLON.Vector3(-5, 3, -5), scene);
+            fillLight.intensity = 0.4;
+            fillLight.range = 40;
+
+            const spotLight = new BABYLON.SpotLight('spotLight', new BABYLON.Vector3(0, 8, 0), new BABYLON.Vector3(0, -1, 0), Math.PI / 3, 2, scene);
             spotLight.intensity = 1;
-            spotLight.range = 50;
+            spotLight.range = 60;
 
             // Create environments
             createLockerRoom();
             createPitchEnvironment();
 
-            // Create player
-            player = createPlayerModel();
+            // Create detailed player
+            createDetailedPlayer();
 
             // Input handling
             document.addEventListener('keydown', (e) => {
                 gameState.keys[e.key] = true;
                 if (gameState.phase === 'match' && gameState.isPlaying) {
                     if (e.key === ' ') shootBall();
-                    if (e.key === 'e') passBall();
+                    if (e.key === 'e' || e.key === 'E') passBall();
                 }
             });
 
@@ -641,104 +599,129 @@
 
             window.addEventListener('resize', () => engine.resize());
 
-            showCutscene('Ankunft', '🎒', 'Du kommst mit deinem FCA-Rucksack im Trainingszentrum an.\n\nBereite dich vor, bearbeite deine Ausrüstung und knüpfe dich zusammen für den großen Match!');
+            showCutscene('Ankunft', 'Du kommst mit deinem FCA-Rucksack im Trainingszentrum an.\n\nBereite dich vor, bearbeite deine Ausrüstung und knüpfe dich zusammen für den großen Match!');
         }
 
-        function createPlayerModel() {
-            const playerGroup = new BABYLON.TransformNode('playerGroup', scene);
+        function createDetailedPlayer() {
+            playerGroup = new BABYLON.TransformNode('playerGroup', scene);
+            playerGroup.position = new BABYLON.Vector3(0, 0, 0);
 
-            // Head
-            const head = BABYLON.MeshBuilder.CreateSphere('head', { diameter: 0.35, segments: 32 }, scene);
-            head.position.z = 0;
-            head.parent = playerGroup;
+            // KOPF (Head with detailed features)
+            playerHead = BABYLON.MeshBuilder.CreateSphere('playerHead', { diameter: 0.35, segments: 64 }, scene);
+            playerHead.position = new BABYLON.Vector3(0, 1.5, 0);
+            playerHead.parent = playerGroup;
 
-            const headMat = new BABYLON.StandardMaterial('headMat', scene);
-            headMat.diffuse = new BABYLON.Color3(0.95, 0.85, 0.75);
-            head.material = headMat;
+            const headMaterial = new BABYLON.StandardMaterial('headMat', scene);
+            headMaterial.diffuse = new BABYLON.Color3(0.95, 0.82, 0.72); // Helle gebräunte Hautfarbe
+            headMaterial.specularColor = new BABYLON.Color3(0.2, 0.2, 0.2);
+            headMaterial.specularPower = 16;
+            playerHead.material = headMaterial;
 
-            // Hair
-            const hair = BABYLON.MeshBuilder.CreateSphere('hair', { diameter: 0.37, segments: 32 }, scene);
-            hair.position.z = 0.01;
-            hair.parent = playerGroup;
+            // HAARE (Schwarzer Buzzcut)
+            const hairSphere = BABYLON.MeshBuilder.CreateSphere('hair', { diameter: 0.38, segments: 64 }, scene);
+            hairSphere.position = new BABYLON.Vector3(0, 1.52, 0);
+            hairSphere.parent = playerGroup;
 
-            const hairMat = new BABYLON.StandardMaterial('hairMat', scene);
-            hairMat.diffuse = new BABYLON.Color3(0.08, 0.08, 0.08);
-            hair.material = hairMat;
+            const hairMaterial = new BABYLON.StandardMaterial('hairMat', scene);
+            hairMaterial.diffuse = new BABYLON.Color3(0.08, 0.08, 0.08);
+            hairMaterial.specularColor = new BABYLON.Color3(0.05, 0.05, 0.05);
+            hairSphere.material = hairMaterial;
 
-            // Torso
-            const torso = BABYLON.MeshBuilder.CreateBox('torso', { width: 0.35, height: 0.65, depth: 0.25 }, scene);
-            torso.position = new BABYLON.Vector3(0, -0.25, 0);
-            torso.parent = playerGroup;
+            // AUGEN (Eyes)
+            const leftEye = BABYLON.MeshBuilder.CreateSphere('leftEye', { diameter: 0.08, segments: 32 }, scene);
+            leftEye.position = new BABYLON.Vector3(-0.08, 1.55, 0.15);
+            leftEye.parent = playerGroup;
 
-            const torsoMat = new BABYLON.StandardMaterial('torsoMat', scene);
-            torsoMat.diffuse = new BABYLON.Color3(1, 0.95, 0.85);
-            torso.material = torsoMat;
+            const eyeMaterial = new BABYLON.StandardMaterial('eyeMat', scene);
+            eyeMaterial.diffuse = new BABYLON.Color3(0.2, 0.2, 0.2);
+            eyeMaterial.emissiveColor = new BABYLON.Color3(0.1, 0.1, 0.1);
+            leftEye.material = eyeMaterial;
 
-            // Jersey (Heimtrikot)
-            const jersey = BABYLON.MeshBuilder.CreateBox('jersey', { width: 0.37, height: 0.67, depth: 0.27 }, scene);
-            jersey.position = new BABYLON.Vector3(0, -0.25, 0.01);
-            jersey.parent = playerGroup;
+            const rightEye = BABYLON.MeshBuilder.CreateSphere('rightEye', { diameter: 0.08, segments: 32 }, scene);
+            rightEye.position = new BABYLON.Vector3(0.08, 1.55, 0.15);
+            rightEye.parent = playerGroup;
+            rightEye.material = eyeMaterial;
 
-            const jerseyMat = new BABYLON.StandardMaterial('jerseyMat', scene);
-            jerseyMat.diffuse = new BABYLON.Color3(1, 0.95, 0.85);
-            jersey.material = jerseyMat;
+            // RUMPF (Body/Torso)
+            playerBody = BABYLON.MeshBuilder.CreateBox('playerBody', { width: 0.35, height: 0.65, depth: 0.25 }, scene);
+            playerBody.position = new BABYLON.Vector3(0, 0.8, 0);
+            playerBody.parent = playerGroup;
 
-            // Arms
+            const bodyMaterial = new BABYLON.StandardMaterial('bodyMat', scene);
+            bodyMaterial.diffuse = new BABYLON.Color3(0.95, 0.82, 0.72);
+            bodyMaterial.specularColor = new BABYLON.Color3(0.15, 0.15, 0.15);
+            playerBody.material = bodyMaterial;
+
+            // TRIKOT (Jersey - Heimtrikot weiß)
+            playerJersey = BABYLON.MeshBuilder.CreateBox('playerJersey', { width: 0.37, height: 0.67, depth: 0.27 }, scene);
+            playerJersey.position = new BABYLON.Vector3(0, 0.8, 0.01);
+            playerJersey.parent = playerGroup;
+
+            const jerseyMaterial = new BABYLON.StandardMaterial('jerseyMat', scene);
+            jerseyMaterial.diffuse = new BABYLON.Color3(1, 0.95, 0.85);
+            jerseyMaterial.specularColor = new BABYLON.Color3(0.2, 0.2, 0.2);
+            jerseyMaterial.specularPower = 32;
+            playerJersey.material = jerseyMaterial;
+
+            // RÜCKENNUMMER (Jersey Number - 10)
+            const numberTexture = BABYLON.DynamicTexture.CreateFromBase64String('numberTexture', 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==', scene);
+            const numberMaterial = new BABYLON.StandardMaterial('numberMat', scene);
+            numberMaterial.emissiveColor = new BABYLON.Color3(1, 1, 1);
+
+            // ARME (Arms)
             const leftArm = BABYLON.MeshBuilder.CreateBox('leftArm', { width: 0.18, height: 0.6, depth: 0.18 }, scene);
-            leftArm.position = new BABYLON.Vector3(-0.28, 0, 0);
+            leftArm.position = new BABYLON.Vector3(-0.28, 0.8, 0);
             leftArm.parent = playerGroup;
-            leftArm.material = headMat;
+            leftArm.material = bodyMaterial;
 
             const rightArm = BABYLON.MeshBuilder.CreateBox('rightArm', { width: 0.18, height: 0.6, depth: 0.18 }, scene);
-            rightArm.position = new BABYLON.Vector3(0.28, 0, 0);
+            rightArm.position = new BABYLON.Vector3(0.28, 0.8, 0);
             rightArm.parent = playerGroup;
-            rightArm.material = headMat;
+            rightArm.material = bodyMaterial;
 
-            // Wrist Tape (Weißes Handgelenkstape)
+            // HANDGELENK TAPE (Wristape - Weiß)
             const wristTape = BABYLON.MeshBuilder.CreateBox('wristTape', { width: 0.2, height: 0.08, depth: 0.2 }, scene);
-            wristTape.position = new BABYLON.Vector3(-0.28, -0.3, 0);
+            wristTape.position = new BABYLON.Vector3(-0.28, 0.5, 0);
             wristTape.parent = playerGroup;
 
-            const wristMat = new BABYLON.StandardMaterial('wristMat', scene);
-            wristMat.diffuse = new BABYLON.Color3(1, 1, 1);
-            wristTape.material = wristMat;
+            const wristTapeMat = new BABYLON.StandardMaterial('wristTapeMat', scene);
+            wristTapeMat.diffuse = new BABYLON.Color3(1, 1, 1);
+            wristTapeMat.specularColor = new BABYLON.Color3(0.3, 0.3, 0.3);
+            wristTape.material = wristTapeMat;
 
-            // Pants
+            // HOSE (Pants - Weinrot)
             const pants = BABYLON.MeshBuilder.CreateBox('pants', { width: 0.35, height: 0.45, depth: 0.25 }, scene);
-            pants.position = new BABYLON.Vector3(0, -0.65, 0);
+            pants.position = new BABYLON.Vector3(0, 0.25, 0);
             pants.parent = playerGroup;
 
-            const pantsMat = new BABYLON.StandardMaterial('pantsMat', scene);
-            pantsMat.diffuse = new BABYLON.Color3(0.55, 0.12, 0.12);
-            pants.material = pantsMat;
+            const pantsMaterial = new BABYLON.StandardMaterial('pantsMat', scene);
+            pantsMaterial.diffuse = new BABYLON.Color3(0.55, 0.12, 0.12);
+            pantsMaterial.specularColor = new BABYLON.Color3(0.15, 0.15, 0.15);
+            pants.material = pantsMaterial;
 
-            // Socks
+            // STUTZEN (Socks - Weiß)
             const socks = BABYLON.MeshBuilder.CreateBox('socks', { width: 0.33, height: 0.12, depth: 0.23 }, scene);
-            socks.position = new BABYLON.Vector3(0, -1, 0);
+            socks.position = new BABYLON.Vector3(0, -0.1, 0);
             socks.parent = playerGroup;
 
-            const socksMat = new BABYLON.StandardMaterial('socksMat', scene);
-            socksMat.diffuse = new BABYLON.Color3(1, 0.95, 0.85);
-            socks.material = socksMat;
+            const socksMaterial = new BABYLON.StandardMaterial('socksMat', scene);
+            socksMaterial.diffuse = new BABYLON.Color3(1, 0.95, 0.85);
+            socks.material = socksMaterial;
 
-            // Shoes
-            const leftShoe = BABYLON.MeshBuilder.CreateBox('leftShoe', { width: 0.18, height: 0.12, depth: 0.28 }, scene);
-            leftShoe.position = new BABYLON.Vector3(-0.1, -1.15, 0);
-            leftShoe.parent = playerGroup;
+            // SCHUHE (Shoes - Schwarz)
+            playerLeftShoe = BABYLON.MeshBuilder.CreateBox('leftShoe', { width: 0.18, height: 0.12, depth: 0.28 }, scene);
+            playerLeftShoe.position = new BABYLON.Vector3(-0.1, -0.25, 0);
+            playerLeftShoe.parent = playerGroup;
 
-            const shoeMat = new BABYLON.StandardMaterial('shoeMat', scene);
-            shoeMat.diffuse = new BABYLON.Color3(0.1, 0.1, 0.1);
-            leftShoe.material = shoeMat;
+            const shoeMaterial = new BABYLON.StandardMaterial('shoeMat', scene);
+            shoeMaterial.diffuse = new BABYLON.Color3(0.1, 0.1, 0.1);
+            shoeMaterial.specularColor = new BABYLON.Color3(0.2, 0.2, 0.2);
+            playerLeftShoe.material = shoeMaterial;
 
-            const rightShoe = BABYLON.MeshBuilder.CreateBox('rightShoe', { width: 0.18, height: 0.12, depth: 0.28 }, scene);
-            rightShoe.position = new BABYLON.Vector3(0.1, -1.15, 0);
-            rightShoe.parent = playerGroup;
-            rightShoe.material = shoeMat;
-
-            playerGroup.position = new BABYLON.Vector3(0, 0, 0);
-            playerMeshes = { head, hair, torso, jersey, leftArm, rightArm, wristTape, pants, socks, leftShoe, rightShoe };
-
-            return playerGroup;
+            playerRightShoe = BABYLON.MeshBuilder.CreateBox('rightShoe', { width: 0.18, height: 0.12, depth: 0.28 }, scene);
+            playerRightShoe.position = new BABYLON.Vector3(0.1, -0.25, 0);
+            playerRightShoe.parent = playerGroup;
+            playerRightShoe.material = shoeMaterial;
         }
 
         function createLockerRoom() {
@@ -747,7 +730,7 @@
             groundMat.diffuse = new BABYLON.Color3(0.08, 0.1, 0.15);
             ground.material = groundMat;
 
-            // Benches and lockers (simple geometry)
+            // Benches
             for (let i = 0; i < 3; i++) {
                 const locker = BABYLON.MeshBuilder.CreateBox('locker' + i, { width: 1.5, height: 2.5, depth: 0.8 }, scene);
                 locker.position = new BABYLON.Vector3(-5 + i * 3, 1.25, -10);
@@ -764,35 +747,83 @@
             pitch.material = pitchMat;
         }
 
-        function updatePlayerModel() {
-            if (playerMeshes.jersey) {
-                const shoeColor = gameState.currentShoeColor;
-                let colorVec;
-                switch (shoeColor) {
-                    case 'white': colorVec = new BABYLON.Color3(0.95, 0.95, 0.95); break;
-                    case 'gold': colorVec = new BABYLON.Color3(0.83, 0.69, 0.22); break;
-                    case 'red': colorVec = new BABYLON.Color3(0.77, 0.12, 0.23); break;
-                    default: colorVec = new BABYLON.Color3(0.1, 0.1, 0.1);
-                }
-                playerMeshes.leftShoe.material.diffuse = colorVec;
-                playerMeshes.rightShoe.material.diffuse = colorVec;
-            }
-        }
-
         function rotatePlayer(angle) {
             if (angle === 0) {
                 gameState.playerRotation = 0;
             } else {
                 gameState.playerRotation = angle;
             }
-            player.rotation.y = gameState.playerRotation;
+            playerGroup.rotation.y = gameState.playerRotation;
+        }
+
+        function setPlayerPose(pose) {
+            gameState.playerPose = pose;
+            switch (pose) {
+                case 'celebration':
+                    playerGroup.getChildMeshes()[3].rotation.z = Math.PI / 4;
+                    playerGroup.getChildMeshes()[4].rotation.z = -Math.PI / 4;
+                    break;
+                case 'warmup':
+                    playerGroup.getChildMeshes()[3].rotation.x = Math.PI / 6;
+                    playerGroup.getChildMeshes()[4].rotation.x = -Math.PI / 6;
+                    break;
+                case 'pass':
+                    playerGroup.getChildMeshes()[3].rotation.z = Math.PI / 3;
+                    break;
+                default:
+                    playerGroup.getChildMeshes().forEach(m => m.rotation = new BABYLON.Vector3(0, 0, 0));
+            }
         }
 
         function setShoeColor(color) {
             gameState.currentShoeColor = color;
             document.querySelectorAll('.color-option').forEach(el => el.classList.remove('active'));
             event.target.classList.add('active');
-            updatePlayerModel();
+
+            let colorVec;
+            switch (color) {
+                case 'white': colorVec = new BABYLON.Color3(0.95, 0.95, 0.95); break;
+                case 'gold': colorVec = new BABYLON.Color3(0.83, 0.69, 0.22); break;
+                case 'red': colorVec = new BABYLON.Color3(0.77, 0.12, 0.23); break;
+                default: colorVec = new BABYLON.Color3(0.1, 0.1, 0.1);
+            }
+            playerLeftShoe.material.diffuse = colorVec;
+            playerRightShoe.material.diffuse = colorVec;
+        }
+
+        function updateJersey() {
+            const jerseyType = document.getElementById('jerseyType').value;
+            gameState.currentJersey = jerseyType;
+
+            let color;
+            switch (jerseyType) {
+                case 'away': color = new BABYLON.Color3(0.09, 0.54, 0.61); break; // Blau
+                case 'prematch': color = new BABYLON.Color3(0.1, 0.1, 0.1); break; // Schwarz
+                case 'training': color = new BABYLON.Color3(0.55, 0.12, 0.12); break; // Weinrot
+                default: color = new BABYLON.Color3(1, 0.95, 0.85); // Weiß
+            }
+            playerJersey.material.diffuse = color;
+        }
+
+        function updatePlayerModel() {
+            gameState.currentShoes = document.getElementById('shoeModel').value;
+        }
+
+        function proceedToNextPhase() {
+            if (gameState.phase === 'lockerroom') {
+                gameState.phase = 'warmup';
+                document.getElementById('phaseText').textContent = 'Aufwärmen - Bereite dich auf den Match vor';
+                showCutscene('Aufwärmen', 'Du wärmst dich auf dem Platz auf.\n\nDie Spannung steigt! ⚡');
+            } else if (gameState.phase === 'warmup') {
+                gameState.phase = 'match';
+                document.getElementById('phaseText').textContent = 'Match - Spielzeit';
+                document.getElementById('editorSection').style.display = 'none';
+                document.getElementById('matchHUD').classList.add('active');
+                document.getElementById('actionIndicator').classList.add('active');
+                gameState.isPlaying = true;
+                gameState.matchTime = 0;
+                showCutscene('ANPFIFF', 'Das Spiel beginnt!\n\nSTEUERE MERT KÖMÜR:\nWASD = Bewegen | SPACE = Schuss | E = Pass');
+            }
         }
 
         function updateGameLoop() {
@@ -801,61 +832,31 @@
                 if (gameState.matchTime >= gameState.matchDuration) {
                     endMatch();
                 } else {
-                    updateMatchStats();
-                }
-
-                // Simple AI for opponent
-                if (Math.random() < 0.01) {
-                    gameState.goals += Math.random() < 0.3 ? 1 : 0;
+                    const minutes = String(Math.floor(gameState.matchTime)).padStart(2, '0');
+                    const seconds = String(Math.floor((gameState.matchTime % 1) * 60)).padStart(2, '0');
+                    document.getElementById('matchTime').textContent = `${minutes}:${seconds} / ${gameState.matchDuration}:00`;
+                    document.getElementById('scoreboard').textContent = `FCA ${gameState.goals} : ${Math.floor(Math.random() * 2)} OPP`;
                 }
             }
-        }
-
-        function updateMatchStats() {
-            document.getElementById('scoreboard').textContent = `FCA ${gameState.goals} : ${Math.floor(Math.random() * 2)} OPP`;
-            document.getElementById('matchTime').textContent = `${String(Math.floor(gameState.matchTime)).padStart(2, '0')}:${String(Math.floor((gameState.matchTime % 1) * 60)).padStart(2, '0')} / ${gameState.matchDuration}:00`;
-            document.getElementById('playerGoals').textContent = gameState.goals;
-            document.getElementById('playerAssists').textContent = gameState.assists;
-            document.getElementById('playerTouches').textContent = gameState.touches;
-            document.getElementById('playerPasses').textContent = gameState.passAccuracy + '%';
         }
 
         function shootBall() {
             gameState.goals += 1;
-            gameState.touches += 1;
-            console.log('🎯 TOOOOOR!');
+            setPlayerPose('celebration');
         }
 
         function passBall() {
             gameState.assists += 1;
-            gameState.touches += 1;
+            setPlayerPose('pass');
         }
 
         function endMatch() {
             gameState.isPlaying = false;
-            showCutscene('Nach dem Spiel', '🎉', `FCA ${gameState.goals} : ${Math.floor(Math.random() * 2)}\n\nDeine Performance:\n⚽ Tore: ${gameState.goals}\n🤝 Assists: ${gameState.assists}\n👟 Ballkontakte: ${gameState.touches}`);
+            showCutscene('Nach dem Spiel', `FCA ${gameState.goals} : ${Math.floor(Math.random() * 2)}\n\nDeine Performance:\n⚽ Tore: ${gameState.goals}\n🤝 Assists: ${gameState.assists}`);
         }
 
-        function proceedToNextPhase() {
-            if (gameState.phase === 'lockerroom') {
-                gameState.phase = 'warmup';
-                document.getElementById('phaseText').textContent = 'Aufwärmen - Bereite deich auf den Match vor';
-                showCutscene('Aufwärmen', '🔥', 'Du wärmst dich auf dem Platz auf.\n\nDie Spannung steigt!');
-            } else if (gameState.phase === 'warmup') {
-                gameState.phase = 'match';
-                document.getElementById('phaseText').textContent = 'Match - Spielzeit';
-                document.getElementById('editorSection').style.display = 'none';
-                document.getElementById('matchHUD').style.display = 'flex';
-                document.getElementById('matchStats').style.display = 'block';
-                document.getElementById('actionIndicator').style.display = 'block';
-                gameState.isPlaying = true;
-                gameState.matchTime = 0;
-                showCutscene('ANPFIFF', '⚽', 'Das Spiel beginnt!\n\nSTEUERE MERT KÖMÜR:\nWASD = Bewegen | SPACE = Schuss | E = Pass');
-            }
-        }
-
-        function showCutscene(title, emoji, text) {
-            document.getElementById('cutsceneTitle').textContent = emoji + ' ' + title;
+        function showCutscene(title, text) {
+            document.getElementById('cutsceneTitle').textContent = title;
             document.getElementById('cutsceneText').textContent = text;
             document.getElementById('cutscene').classList.add('active');
         }
