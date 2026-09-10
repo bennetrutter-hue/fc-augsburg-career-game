@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FCA PRO — Mert Kömür Career Mode</title>
+    <script src="https://cdn.babylonjs.com/babylon.js"></script>
+    <script src="https://cdn.babylonjs.com/materials/babylonjs.materials.min.js"></script>
+    <script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background: #050b12;
+            color: #edf5ff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow: hidden;
+        }
+
+        .container {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+        }
+
+        #renderCanvas {
+            flex: 1;
+            width: 100%;
+            height: 100%;
+        }
+
+        .hud {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        .header {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            pointer-events: auto;
+            background: rgba(5, 11, 18, 0.9);
+            padding: 15px 20px;
+            border-radius: 12px;
+            border: 2px solid #d5ae5b;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            font-weight: 900;
+            letter-spacing: 0.05em;
+            color: #d5ae5b;
+        }
+
+        .header p {
+            font-size: 12px;
+            color: #9fb1c3;
+            margin-top: 5px;
+        }
+
+        .panel {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            right: 20px;
+            background: rgba(8, 19, 31, 0.95);
+            border: 2px solid #263f54;
+            border-radius: 16px;
+            padding: 20px;
+            pointer-events: auto;
+            max-width: 400px;
+        }
+
+        .panel h2 {
+            font-size: 18px;
+            margin-bottom: 12px;
+            color: #d5ae5b;
+        }
+
+        .controls {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .control-group label {
+            font-size: 11px;
+            color: #9fb1c3;
+            margin-bottom: 4px;
+            text-transform: uppercase;
+        }
+
+        .control-group input,
+        .control-group select {
+            padding: 8px;
+            border-radius: 8px;
+            border: 1px solid #2a4359;
+            background: #07131f;
+            color: white;
+            font-size: 12px;
+        }
+
+        .rotation-controls {
+            display: flex;
+            gap: 8px;
+            margin: 12px 0;
+            justify-content: center;
+        }
+
+        .rotation-btn {
+            width: 40px;
+            height: 40px;
+            border: 1px solid #355067;
+            background: #112335;
+            color: #d5ae5b;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+
+        .rotation-btn:hover {
+            background: #1a3d52;
+            border-color: #d5ae5b;
+        }
+
+        .btn-primary {
+            background: #d5ae5b;
+            color: #111;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 8px;
+            font-weight: 900;
+            cursor: pointer;
+            width: 100%;
+            font-size: 12px;
+            transition: all 0.2s;
+        }
+
+        .btn-primary:hover {
+            background: #e8c97d;
+            transform: translateY(-2px);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin: 15px 0;
+        }
+
+        .stat-card {
+            background: #0c1926;
+            border: 1px solid #22394c;
+            border-radius: 10px;
+            padding: 10px;
+            text-align: center;
+        }
+
+        .stat-card .label {
+            font-size: 10px;
+            color: #9fb1c3;
+            text-transform: uppercase;
+        }
+
+        .stat-card .value {
+            font-size: 18px;
+            font-weight: bold;
+            color: #d5ae5b;
+            margin-top: 4px;
+        }
+
+        .celebration {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(5, 11, 18, 0.95);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            pointer-events: auto;
+        }
+
+        .celebration.active {
+            display: flex;
+        }
+
+        .celebration-content {
+            text-align: center;
+            background: linear-gradient(145deg, #0d1b29, #09131f);
+            border: 2px solid #263f54;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 600px;
+        }
+
+        .celebration-title {
+            font-size: 36px;
+            font-weight: 900;
+            color: #d5ae5b;
+            margin-bottom: 20px;
+        }
+
+        .celebration-text {
+            font-size: 16px;
+            color: #9fb1c3;
+            margin-bottom: 20px;
+        }
+
+        .action-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin: 20px 0;
+        }
+
+        .action-btn {
+            padding: 15px;
+            border-radius: 10px;
+            border: 2px solid #355067;
+            background: #112335;
+            color: #d5ae5b;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+
+        .action-btn:hover {
+            background: #1a3d52;
+            border-color: #d5ae5b;
+            transform: translateY(-2px);
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: #d5ae5b;
+            color: #111;
+            padding: 15px 20px;
+            border-radius: 10px;
+            font-weight: 900;
+            opacity: 0;
+            transition: opacity 0.3s;
+            z-index: 50;
+            pointer-events: none;
+        }
+
+        .toast.show {
+            opacity: 1;
+        }
+
+        .phase-indicator {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(8, 19, 31, 0.9);
+            padding: 15px 20px;
+            border-radius: 12px;
+            border: 2px solid #d5ae5b;
+            pointer-events: auto;
+            max-width: 250px;
+        }
+
+        .phase-indicator h3 {
+            font-size: 14px;
+            color: #d5ae5b;
+            margin-bottom: 8px;
+        }
+
+        .phase-indicator p {
+            font-size: 12px;
+            color: #9fb1c3;
+            line-height: 1.6;
+        }
+
+        @media (max-width: 768px) {
+            .panel {
+                max-width: 100%;
+                bottom: 10px;
+                left: 10px;
+                right: 10px;
+            }
+
+            .phase-indicator {
+                top: 10px;
+                right: 10px;
+                max-width: calc(100% - 20px);
+            }
+        }
+    </style>
+</head>
+<body>
+    <canvas id="renderCanvas"></canvas>
+
+    <div class="hud">
+        <div class="header">
+            <h1>🔴 FCA PRO</h1>
+            <p>Mert Kömür #10 · ZOM</p>
+        </div>
+
+        <div class="phase-indicator">
+            <h3 id="phaseTitle">Locker Room</h3>
+            <p id="phaseDesc">Customize your player and prepare for the match</p>
+        </div>
+
+        <div class="panel">
+            <h2 id="panelTitle">Spieler Editor</h2>
+
+            <div class="controls">
+                <div class="control-group">
+                    <label>Schuh-Style</label>
+                    <select id="shoeStyle" onchange="updateShoes()">
+                        <option value="adidas-speed">Adidas Speed</option>
+                        <option value="adidas-predator">Adidas Predator</option>
+                        <option value="nike-vapor">Nike Vapor</option>
+                        <option value="nike-phantom">Nike Phantom</option>
+                    </select>
+                </div>
+                <div class="control-group">
+                    <label>Schuh Farbe</label>
+                    <select id="shoeColor" onchange="updateShoes()">
+                        <option value="black">Schwarz</option>
+                        <option value="white">Weiß</option>
+                        <option value="gold">Gold</option>
+                        <option value="red">Rot</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="rotation-controls">
+                <button class="rotation-btn" onclick="rotatePlayer(-0.1)">◀</button>
+                <button class="rotation-btn" onclick="rotatePlayer(0)">🔄</button>
+                <button class="rotation-btn" onclick="rotatePlayer(0.1)">▶</button>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="label">Fitness</div>
+                    <div class="value" id="fitnessStat">84</div>
+                </div>
+                <div class="stat-card">
+                    <div class="label">Form</div>
+                    <div class="value" id="formStat">78</div>
+                </div>
+                <div class="stat-card">
+                    <div class="label">Taktik</div>
+                    <div class="value" id="tacticStat">72</div>
+                </div>
+                <div class="stat-card">
+                    <div class="label">Teamchemie</div>
+                    <div class="value" id="chemStat">70</div>
+                </div>
+            </div>
+
+            <button class="btn-primary" onclick="nextPhase()">WEITER ZUR NÄCHSTEN STATION →</button>
+        </div>
+    </div>
+
+    <div class="celebration" id="celebration">
+        <div class="celebration-content">
+            <div class="celebration-title" id="celebTitle">🎉 SIEG!</div>
+            <div class="celebration-text" id="celebText">Die Fans jubeln! Was möchtest du tun?</div>
+            <div class="action-buttons">
+                <button class="action-btn" onclick="giveJersey()">👕 Trikot hergeben</button>
+                <button class="action-btn" onclick="signAutographs()">✍️ Autogramme geben</button>
+            </div>
+            <button class="btn-primary" onclick="closeCelebration()" style="margin-top: 20px;">Zum nächsten Spiel</button>
+        </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+        // Game State
+        const gameState = {
+            phase: 'lockerroom', // lockerroom, warmup, match, celebration
+            playerRotation: 0,
+            currentShoes: 'adidas-speed',
+            currentShoeColor: 'black',
+            fitness: 84,
+            form: 78,
+            tactics: 72,
+            chemistry: 70,
+            goals: 0,
+            assists: 0,
+            matchComplete: false
+        };
+
+        // Babylon.js Setup
+        const canvas = document.getElementById('renderCanvas');
+        const engine = new BABYLON.Engine(canvas, true);
+        let scene, camera, player, lockerRoomEnvironment;
+
+        async function initScene() {
+            scene = new BABYLON.Scene(engine);
+            scene.clearColor = new BABYLON.Color3(0.02, 0.04, 0.07);
+
+            // Camera
+            camera = new BABYLON.ArcRotateCamera('camera', Math.PI / 2, Math.PI / 2.5, 3, new BABYLON.Vector3(0, 0, 0), scene);
+            camera.attachControl(canvas, true);
+            camera.inertia = 0.7;
+            camera.angularSensibilityX = 1000;
+            camera.angularSensibilityY = 1000;
+
+            // Lighting
+            const light1 = new BABYLON.HemisphericLight('light1', new BABYLON.Vector3(1, 1, 1), scene);
+            light1.intensity = 0.8;
+
+            const light2 = new BABYLON.PointLight('light2', new BABYLON.Vector3(5, 5, 5), scene);
+            light2.intensity = 0.5;
+            light2.range = 20;
+
+            const light3 = new BABYLON.SpotLight('light3', new BABYLON.Vector3(0, 5, 0), new BABYLON.Vector3(0, -1, 0), Math.PI / 3, 2, scene);
+            light3.intensity = 1;
+            light3.range = 30;
+
+            // Create Locker Room Environment
+            createLockerRoom();
+
+            // Create Player (Mert Kömür)
+            player = createPlayer();
+
+            // Render loop
+            engine.runRenderLoop(() => {
+                scene.render();
+            });
+
+            window.addEventListener('resize', () => {
+                engine.resize();
+            });
+        }
+
+        function createLockerRoom() {
+            // Ground
+            const ground = BABYLON.MeshBuilder.CreateGround('ground', { width: 20, height: 20 }, scene);
+            const groundMaterial = new BABYLON.StandardMaterial('groundMat', scene);
+            groundMaterial.diffuse = new BABYLON.Color3(0.1, 0.15, 0.2);
+            ground.material = groundMaterial;
+
+            // Locker
+            const locker = BABYLON.MeshBuilder.CreateBox('locker', { width: 2, height: 3, depth: 1 }, scene);
+            locker.position = new BABYLON.Vector3(3, 1.5, 0);
+            const lockerMat = new BABYLON.StandardMaterial('lockerMat', scene);
+            lockerMat.diffuse = new BABYLON.Color3(0.4, 0.4, 0.4);
+            locker.material = lockerMat;
+
+            // Bench
+            const bench = BABYLON.MeshBuilder.CreateBox('bench', { width: 3, height: 0.5, depth: 0.8 }, scene);
+            bench.position = new BABYLON.Vector3(-2, 0.25, 0);
+            const benchMat = new BABYLON.StandardMaterial('benchMat', scene);
+            benchMat.diffuse = new BABYLON.Color3(0.5, 0.3, 0.2);
+            bench.material = benchMat;
+
+            // Lockerroom ambiance
+            const wall = BABYLON.MeshBuilder.CreateBox('wall', { width: 20, height: 4, depth: 0.1 }, scene);
+            wall.position = new BABYLON.Vector3(0, 2, -6);
+            const wallMat = new BABYLON.StandardMaterial('wallMat', scene);
+            wallMat.diffuse = new BABYLON.Color3(0.08, 0.12, 0.18);
+            wall.material = wallMat;
+        }
+
+        function createPlayer() {
+            // Head
+            const head = BABYLON.MeshBuilder.CreateSphere('head', { diameter: 0.4, segments: 32 }, scene);
+            head.position = new BABYLON.Vector3(0, 1.5, 0);
+
+            const headMat = new BABYLON.StandardMaterial('headMat', scene);
+            headMat.diffuse = new BABYLON.Color3(0.95, 0.85, 0.75); // Helle gebräunte Hautfarbe
+            head.material = headMat;
+
+            // Hair (Schwarzer Buzzcut)
+            const hair = BABYLON.MeshBuilder.CreateSphere('hair', { diameter: 0.42, segments: 32 }, scene);
+            hair.position = new BABYLON.Vector3(0, 1.52, 0);
+            const hairMat = new BABYLON.StandardMaterial('hairMat', scene);
+            hairMat.diffuse = new BABYLON.Color3(0.1, 0.1, 0.1);
+            hair.material = hairMat;
+
+            // Body (Trikot)
+            const body = BABYLON.MeshBuilder.CreateBox('body', { width: 0.4, height: 0.8, depth: 0.25 }, scene);
+            body.position = new BABYLON.Vector3(0, 0.8, 0);
+            const bodyMat = new BABYLON.StandardMaterial('bodyMat', scene);
+            bodyMat.diffuse = new BABYLON.Color3(0.95, 0.85, 0.75); // Skin
+            body.material = bodyMat;
+
+            // Jersey (Heimtrikot - Weiß/Creme)
+            const jersey = BABYLON.MeshBuilder.CreateBox('jersey', { width: 0.42, height: 0.82, depth: 0.27 }, scene);
+            jersey.position = new BABYLON.Vector3(0, 0.8, 0);
+            const jerseyMat = new BABYLON.StandardMaterial('jerseyMat', scene);
+            jerseyMat.diffuse = new BABYLON.Color3(1, 0.95, 0.85); // Weiß/Creme
+            jersey.material = jerseyMat;
+
+            // Arms
+            const leftArm = BABYLON.MeshBuilder.CreateBox('leftArm', { width: 0.2, height: 0.7, depth: 0.2 }, scene);
+            leftArm.position = new BABYLON.Vector3(-0.3, 1, 0);
+            const armMat = new BABYLON.StandardMaterial('armMat', scene);
+            armMat.diffuse = new BABYLON.Color3(0.95, 0.85, 0.75);
+            leftArm.material = armMat;
+
+            // Wristape (Weißes Handgelenk Tape)
+            const wristTape = BABYLON.MeshBuilder.CreateBox('wristTape', { width: 0.22, height: 0.1, depth: 0.22 }, scene);
+            wristTape.position = new BABYLON.Vector3(-0.3, 0.65, 0);
+            const wristTapeMat = new BABYLON.StandardMaterial('wristTapeMat', scene);
+            wristTapeMat.diffuse = new BABYLON.Color3(1, 1, 1);
+            wristTape.material = wristTapeMat;
+
+            const rightArm = BABYLON.MeshBuilder.CreateBox('rightArm', { width: 0.2, height: 0.7, depth: 0.2 }, scene);
+            rightArm.position = new BABYLON.Vector3(0.3, 1, 0);
+            rightArm.material = armMat;
+
+            // Pants (Hose - Weinrot)
+            const pants = BABYLON.MeshBuilder.CreateBox('pants', { width: 0.4, height: 0.5, depth: 0.25 }, scene);
+            pants.position = new BABYLON.Vector3(0, 0.25, 0);
+            const pantsMat = new BABYLON.StandardMaterial('pantsMat', scene);
+            pantsMat.diffuse = new BABYLON.Color3(0.55, 0.12, 0.12); // Weinrot
+            pants.material = pantsMat;
+
+            // Socks (Stutzen)
+            const socks = BABYLON.MeshBuilder.CreateBox('socks', { width: 0.38, height: 0.15, depth: 0.24 }, scene);
+            socks.position = new BABYLON.Vector3(0, -0.15, 0);
+            const socksMat = new BABYLON.StandardMaterial('socksMat', scene);
+            socksMat.diffuse = new BABYLON.Color3(1, 0.95, 0.85); // Weiß/Creme
+            socks.material = socksMat;
+
+            // Shoes
+            const leftShoe = BABYLON.MeshBuilder.CreateBox('leftShoe', { width: 0.2, height: 0.15, depth: 0.3 }, scene);
+            leftShoe.position = new BABYLON.Vector3(-0.1, -0.35, 0);
+            const shoeMat = new BABYLON.StandardMaterial('shoeMat', scene);
+            shoeMat.diffuse = new BABYLON.Color3(0.1, 0.1, 0.1); // Schwarz
+            leftShoe.material = shoeMat;
+
+            const rightShoe = BABYLON.MeshBuilder.CreateBox('rightShoe', { width: 0.2, height: 0.15, depth: 0.3 }, scene);
+            rightShoe.position = new BABYLON.Vector3(0.1, -0.35, 0);
+            rightShoe.material = shoeMat;
+
+            // Player mesh (parent all parts)
+            const playerMesh = new BABYLON.TransformNode('playerMesh', scene);
+            head.parent = playerMesh;
+            hair.parent = playerMesh;
+            body.parent = playerMesh;
+            jersey.parent = playerMesh;
+            leftArm.parent = playerMesh;
+            rightArm.parent = playerMesh;
+            wristTape.parent = playerMesh;
+            pants.parent = playerMesh;
+            socks.parent = playerMesh;
+            leftShoe.parent = playerMesh;
+            rightShoe.parent = playerMesh;
+
+            playerMesh.position = new BABYLON.Vector3(0, 0, 0);
+
+            return playerMesh;
+        }
+
+        function rotatePlayer(direction) {
+            if (direction === 0) {
+                gameState.playerRotation = 0;
+            } else {
+                gameState.playerRotation += direction;
+            }
+            player.rotation.y = gameState.playerRotation;
+        }
+
+        function updateShoes() {
+            gameState.currentShoes = document.getElementById('shoeStyle').value;
+            gameState.currentShoeColor = document.getElementById('shoeColor').value;
+            showToast('Schuhe aktualisiert! ⚽');
+        }
+
+        function nextPhase() {
+            if (gameState.phase === 'lockerroom') {
+                gameState.phase = 'warmup';
+                updateUI();
+                showToast('Aufwärmen startet! 🔥');
+            } else if (gameState.phase === 'warmup') {
+                gameState.phase = 'match';
+                updateUI();
+                startMatch();
+            } else if (gameState.phase === 'match') {
+                gameState.phase = 'celebration';
+                updateUI();
+                showCelebration();
+            }
+        }
+
+        function updateUI() {
+            const phaseInfo = {
+                lockerroom: {
+                    title: 'Kabine (Locker Room)',
+                    desc: 'Bearbeite deinen Spieler und wähle deine Ausrüstung. Du kommst in Prematch Shirt und Jeans an.'
+                },
+                warmup: {
+                    title: 'Aufwärmen',
+                    desc: 'Wärme dich auf dem Platz auf. Du trägst Prematch Shirt und die passende Hose zum Gegner.'
+                },
+                match: {
+                    title: '⚽ MATCH',
+                    desc: 'Spielzeit: 0:00 - Steure Mert Kömür mit WASD/Pfeiltasten. Schuss: Leertaste, Pass: E'
+                },
+                celebration: {
+                    title: '🎉 NACH DEM SPIEL',
+                    desc: 'Feiere mit den Fans in der WWK Arena! Die Mannschaft und du im Trainingsshirt.'
+                }
+            };
+
+            const info = phaseInfo[gameState.phase];
+            document.getElementById('phaseTitle').textContent = info.title;
+            document.getElementById('phaseDesc').textContent = info.desc;
+            document.getElementById('panelTitle').textContent = info.title;
+        }
+
+        function startMatch() {
+            // Simulate match
+            showToast('Anpfiff! ⚽');
+            setTimeout(() => {
+                gameState.goals = Math.floor(Math.random() * 3);
+                gameState.assists = Math.floor(Math.random() * 2);
+                gameState.matchComplete = true;
+                nextPhase();
+            }, 5000); // 5 second demo match
+        }
+
+        function showCelebration() {
+            document.getElementById('celebration').classList.add('active');
+            document.getElementById('celebText').textContent = `FCA ${gameState.goals}:0 | Deine Tore: ${gameState.goals} | Assists: ${gameState.assists}`;
+        }
+
+        function closeCelebration() {
+            document.getElementById('celebration').classList.remove('active');
+            gameState.phase = 'lockerroom';
+            updateUI();
+        }
+
+        function giveJersey() {
+            showToast('👕 Dein Trikot wird vererbt!');
+            showCelebration();
+        }
+
+        function signAutographs() {
+            showToast('✍️ Autogramme signiert!');
+            showCelebration();
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 2000);
+        }
+
+        // Initialize
+        initScene();
+        updateUI();
+    </script>
+</body>
+</html>
