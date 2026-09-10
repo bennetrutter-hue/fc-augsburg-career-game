@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>FCA PRO — Spielbarer Karriere-Modus</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#050b12;color:#edf5ff;font-family:system-ui,Segoe UI,sans-serif;overflow-x:hidden}
+button,input,select{font:inherit}button{cursor:pointer}
+.top{height:64px;background:#08131f;border-bottom:1px solid #24394b;display:flex;align-items:center;justify-content:space-between;padding:0 22px;position:sticky;top:0;z-index:20}
+.brand{font-weight:1000;letter-spacing:.08em}.brand span{color:#d5ae5b}.tabs{display:flex;gap:7px;overflow:auto}.tabs button{background:#0e1c2a;color:#dce7f2;border:1px solid #263d50;padding:9px 12px;border-radius:10px;white-space:nowrap}.tabs button.active{border-color:#d5ae5b;background:#21374a}
+main{max-width:1450px;margin:auto;padding:20px}.screen{display:none}.screen.active{display:block}
+.panel{background:linear-gradient(145deg,#0d1b29,#09131f);border:1px solid #263f54;border-radius:18px;padding:18px}.hero{padding:25px;background:linear-gradient(120deg,#132a3d,#0b1723);border-radius:20px;border:1px solid #36536a}.hero h1{margin:0;font-size:clamp(30px,5vw,56px)}.muted{color:#9fb1c3}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:12px}.cols{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}.card{background:#0c1926;border:1px solid #22394c;border-radius:15px;padding:15px}.stat b{display:block;font-size:27px}.bar{height:7px;background:#213448;border-radius:99px;overflow:hidden;margin-top:7px}.bar i{display:block;height:100%;background:#d5ae5b}
+.actions{display:grid;grid-template-columns:repeat(2,1fr);gap:9px}.action{background:#14283a;border:1px solid #2b465c;border-radius:12px;padding:13px;text-align:left;color:white}.action:hover{border-color:#d5ae5b;transform:translateY(-1px)}.action small{display:block;color:#9fb1c3;margin-top:4px}.primary{border:0;border-radius:11px;padding:12px 16px;background:#d5ae5b;color:#111;font-weight:900}.secondary{border:1px solid #355067;border-radius:11px;padding:11px 14px;background:#112335;color:white}
+.log{height:190px;overflow:auto;background:#06101a;border-radius:10px;padding:10px}.log div{padding:7px 3px;border-bottom:1px solid #152a3d;font-size:13px}
+#gameCanvas{width:100%;height:auto;aspect-ratio:16/9;background:#122;display:block;border-radius:15px;border:1px solid #36516a}.gamebar{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;margin:10px 0}.pill{background:#102234;border:1px solid #2c465b;padding:7px 10px;border-radius:9px}
+.editor{display:grid;grid-template-columns:1fr 1fr;gap:10px}.editor label{font-size:13px;color:#9fb1c3}.editor input,.editor select{width:100%;margin-top:4px;padding:10px;border-radius:9px;border:1px solid #2a4359;background:#07131f;color:white}
+.prostage{height:410px;border-radius:16px;background:radial-gradient(circle at 50% 20%,#304a5c,#101c28 58%,#080f17);position:relative;overflow:hidden;border:1px solid #345066}.probody{position:absolute;left:50%;bottom:25px;transform:translateX(-50%);width:150px;height:255px;border-radius:65px 65px 18px 18px;background:#8d1f30;box-shadow:0 15px 30px #0008}.probody:before{content:"";position:absolute;left:38px;top:-68px;width:74px;height:74px;border-radius:50%;background:#c78d67}.probody:after{content:"9";position:absolute;top:90px;left:0;right:0;text-align:center;font-size:44px;font-weight:1000;color:white}.accessory{position:absolute;left:50%;top:66px;transform:translateX(50px);font-size:22px}
+.room{height:410px;border-radius:16px;position:relative;overflow:hidden;background:linear-gradient(#1b2a35,#101b24);border:1px solid #3a5364}.room .locker{position:absolute;bottom:40px;width:85px;height:220px;background:#5c6670;border:4px solid #303942}.room .locker:nth-child(1){left:8%}.room .locker:nth-child(2){left:18%}.room .locker:nth-child(3){right:18%}.room .locker:nth-child(4){right:8%}.bench{position:absolute;left:28%;right:28%;bottom:75px;height:42px;background:#704f35;border-radius:5px}.mirror{position:absolute;left:39%;top:45px;width:22%;height:115px;background:linear-gradient(135deg,#a9d4dc,#263e4c);border:6px solid #4c392e}.label{position:absolute;background:#07111bcc;padding:7px 10px;border-radius:8px}
+.stadium{height:440px;border-radius:18px;overflow:hidden;position:relative;background:#0c1721;border:1px solid #3b5368}.stand{position:absolute;left:0;right:0;height:120px;background:repeating-linear-gradient(90deg,#a7a7a7 0 10px,#4d4d4d 10px 20px);opacity:.27}.stand.top{top:0}.stand.bottom{bottom:0}.field{position:absolute;left:15%;right:15%;top:80px;bottom:80px;background:repeating-linear-gradient(90deg,#126537 0 60px,#197341 60px 120px);border:2px solid #d6ecd9}.field:before{content:"";position:absolute;left:50%;top:0;bottom:0;border-left:2px solid white}.field:after{content:"";position:absolute;left:43%;top:30%;width:14%;height:40%;border:2px solid white;border-radius:50%}.tunnel{position:absolute;left:45%;bottom:0;width:10%;height:80px;background:#273744;text-align:center;padding-top:27px;font-size:11px}
+#toast{position:fixed;right:18px;bottom:18px;background:#d5ae5b;color:#111;padding:12px 15px;border-radius:11px;font-weight:800;display:none;z-index:50}
+@media(max-width:900px){.grid,.cols{grid-template-columns:1fr 1fr}.cols{grid-template-columns:1fr}.prostage,.room{height:350px}}
+@media(max-width:600px){.grid,.actions,.editor{grid-template-columns:1fr}.top{height:auto;gap:10px;align-items:flex-start;flex-direction:column;padding:12px}}
+</style>
+</head>
+<body>
+<header class="top">
+<div class="brand"><span>FCA PRO</span> · SPIELBAR</div>
+<div class="tabs">
+<button class="active" onclick="show('career',this)">Karriere</button>
+<button onclick="show('day',this)">Mein Tag</button>
+<button onclick="show('play',this)">Match</button>
+<button onclick="show('stadium',this)">Stadion</button>
+<button onclick="show('pro',this)">Mein Pro</button>
+<button onclick="show('kit',this)">Ausrüstung</button>
+</div>
+</header>
+
+<main>
+<section id="career" class="screen active">
+<div class="hero"><h1 id="welcome">Deine FCA-Karriere</h1><p class="muted">Jetzt ist dein Pro nicht mehr nur ein Menüpunkt: Du kannst ihn bearbeiten, durch den Spieltag führen und im Match steuern.</p></div>
+<div class="grid">
+<div class="card stat">Fitness <b id="fit">84</b><div class="bar"><i id="fitb" style="width:84%"></i></div></div>
+<div class="card stat">Form <b id="form">78</b><div class="bar"><i id="formb" style="width:78%"></i></div></div>
+<div class="card stat">Taktik <b id="tac">72</b><div class="bar"><i id="tacb" style="width:72%"></i></div></div>
+<div class="card stat">Teamchemie <b id="chem">70</b><div class="bar"><i id="chemb" style="width:70%"></i></div></div>
+</div>
+<div class="cols">
+<div class="panel"><h2>⚽ Deine nächste Aktion</h2><p class="muted">Starte deinen Spieltag oder spring direkt ins Stadion.</p><button class="primary" onclick="show('day',document.querySelectorAll('.tabs button')[1])">Spieltag starten</button> <button class="secondary" onclick="show('play',document.querySelectorAll('.tabs button')[2])">Match spielen</button></div>
+<div class="panel"><h2>📈 Karriere</h2><p>Position: <b id="posText">ST</b> · Nummer <b id="numText">9</b></p><p>Verein: <b>FC Augsburg</b></p><p>Modus: Bundesliga + Pokal</p></div>
+</div>
+</section>
+
+<section id="day" class="screen">
+<div class="hero"><h1>Mein Profi-Tag</h1><p class="muted">Klicke die Stationen an. Kleidung und Ausrüstung wechseln im Ablauf.</p><div class="chips">Uhrzeit <b id="clock">07:00</b> · Stationen <b id="stations">0</b>/7 · Outfit <b id="outfit">Training</b></div></div>
+<div class="cols">
+<div class="panel"><h2>Tagesablauf</h2><div class="actions">
+<button class="action" onclick="station('Ankunft',1,0,0,2,'Rucksack')">🎒 Ankunft<small>Rucksack, Trainingszentrum, Umkleide</small></button>
+<button class="action" onclick="station('Frühstück',2,1,0,3,'Training')">🥣 Frühstück<small>Team-Frühstück und Hydration</small></button>
+<button class="action" onclick="station('Individualtraining',-5,4,3,1,'Training')">⚽ Individualtraining<small>Ballkontrolle, Pässe, Abschluss</small></button>
+<button class="action" onclick="station('Taktikmeeting',0,1,7,2,'Training')">🧠 Taktik<small>Gegner, Standards, Laufwege</small></button>
+<button class="action" onclick="station('Workout',-6,3,1,1,'Training')">🏋️ Workout<small>Core, Stabilität, Sprinttechnik</small></button>
+<button class="action" onclick="station('Teamtraining',-7,4,2,5,'Training')">👥 Teamtraining<small>Pressing und Umschalten</small></button>
+<button class="action" onclick="station('Kabine + Prematch',0,3,3,4,'Prematch')">👕 Kabine<small>Prematch-Shirt, Tape, Ansprache</small></button>
+<button class="action" onclick="station('Aufwärmen',-3,3,2,1,'Heim')">🔥 Aufwärmen<small>Jetzt bist du auf dem Rasen</small></button>
+</div><button class="primary" style="margin-top:12px" onclick="show('play',document.querySelectorAll('.tabs button')[2]);startMatch()">ANPFIFF → SPIELER STEUERN</button></div>
+<div class="panel"><h2>Profi-Log</h2><div id="log" class="log"></div></div>
+</div>
+</section>
+
+<section id="play" class="screen">
+<div class="hero"><h1>⚽ Match · Du steuerst deinen Pro</h1><p class="muted">WASD/Pfeiltasten = bewegen · Leertaste = Schuss · E = Pass. Auf Mobilgeräten die Steuerkreuze benutzen.</p></div>
+<div class="gamebar"><span class="pill">Spielzeit: <b id="matchTime">00:00</b></span><span class="pill">FCA <b id="myScore">0</b> : <b id="oppScore">0</b> Gegner</span><span class="pill">Ballbesitz: <b id="possession">FCA</b></span><button class="primary" onclick="startMatch()">Neues Spiel</button></div>
+<canvas id="gameCanvas" width="1280" height="720"></canvas>
+<div style="display:flex;justify-content:center;gap:8px;margin-top:10px"><button class="secondary" onclick="keyDown('ArrowLeft')">◀</button><button class="secondary" onclick="keyDown('ArrowUp')">▲</button><button class="secondary" onclick="keyDown('ArrowDown')">▼</button><button class="secondary" onclick="keyDown('ArrowRight')">▶</button><button class="primary" onclick="shoot()">⚽ Schuss</button><button class="secondary" onclick="passBall()">Pass</button></div>
+</section>
+
+<section id="stadium" class="screen">
+<div class="hero"><h1>🏟️ Stadion</h1><p class="muted">Begehbare Bereiche des Spieltags. Die Ansicht ist absichtlich breit angelegt.</p></div>
+<div class="stadium" style="margin-top:12px"><div class="stand top"></div><div class="field"></div><div class="stand bottom"></div><div class="tunnel">SPIELER-<br>TUNNEL</div></div>
+<div class="grid"><div class="card"><h3>🚪 Tunnel</h3><p class="muted">Vom Kabinengang direkt zum Rasen.</p></div><div class="card"><h3>👕 Kabine</h3><p class="muted">Spinde, Trikotplatz und Taktikboard.</p></div><div class="card"><h3>📣 Tribüne</h3><p class="muted">Heimfans und Gästeblock.</p></div><div class="card"><h3>🎙️ Mixed Zone</h3><p class="muted">Interviews nach dem Spiel.</p></div></div>
+</section>
+
+<section id="pro" class="screen">
+<div class="hero"><h1>👤 Mein Pro</h1><p class="muted">Hier bearbeitest du deinen Spieler. Änderungen werden gespeichert.</p></div>
+<div class="cols">
+<div class="panel"><div class="prostage"><div class="probody" id="body"></div><div class="accessory" id="accessory"></div><div class="label" style="left:12px;top:12px" id="stageLabel">Heim</div></div></div>
+<div class="panel"><h2>Spieler-Editor</h2><div class="editor">
+<label>Name<input id="name" value="Dein Profi" oninput="savePro()"></label>
+<label>Position<select id="position" onchange="savePro()"><option>ST</option><option>LA</option><option>RA</option><option>ZM</option><option>IV</option><option>TW</option></select></label>
+<label>Rückennummer<input id="number" type="number" min="1" max="99" value="9" onchange="savePro()"></label>
+<label>Haare<select onchange="savePro()"><option>Kurz</option><option>Mittellang</option><option>Locken</option><option>Lang</option></select></label>
+<label>Outfit<select id="proOutfit" onchange="savePro()"><option>Heim</option><option>Auswärts</option><option>Prematch</option><option>Training</option></select></label>
+<label>Accessoire<select id="accessorySelect" onchange="savePro()"><option>Keine</option><option>AirPods</option><option>Kabelkopfhörer</option><option>Cap</option></select></label>
+<label>Schuhe<select onchange="savePro()"><option>Schwarz</option><option>Weiß</option><option>Rot</option><option>Blau</option></select></label>
+<label>Tattoos<select onchange="savePro()"><option>Keine</option><option>Arme</option><option>Bein</option></select></label>
+</div><p style="margin-top:14px"><button class="primary" onclick="savePro();toast('Spieler gespeichert')">Speichern</button></p><p class="muted">Dein Pro wird im Spiel mit der gewählten Position, Nummer, Kleidung und dem Accessoire verwendet.</p></div>
+</div>
+</section>
+
+<section id="kit" class="screen">
+<div class="hero"><h1>👕 Ausrüstung</h1><p class="muted">Die von dir hochgeladenen Bilder dienen als Referenz für den Prototyp.</p></div>
+<div class="grid">
+<div class="card"><h3>Heim</h3><img src="heim.jpeg" style="width:100%;height:240px;object-fit:contain;background:white;border-radius:10px"><p class="muted">Weiß/creme + weinrot</p></div>
+<div class="card"><h3>Auswärts</h3><img src="auswaerts.jpeg" style="width:100%;height:240px;object-fit:contain;background:white;border-radius:10px"><p class="muted">Blau/türkis</p></div>
+<div class="card"><h3>Prematch</h3><img src="prematch.jpeg" style="width:100%;height:240px;object-fit:contain;background:white;border-radius:10px"><p class="muted">Schwarz</p></div>
+<div class="card"><h3>Training</h3><img src="training_shirt.jpeg" style="width:100%;height:240px;object-fit:contain;background:white;border-radius:10px"><p class="muted">Weinrot</p></div>
+</div>
+</section>
+</main>
+<div id="toast"></div>
+
+<script>
+const S={fit:84,form:78,tac:72,chem:70,done:0,min:420,playing:false,seconds:0,my:0,opp:0,x:640,y:520,bx:640,by:350,bvx:0,bvy:0,hasBall:true};
+const canvas=document.getElementById('gameCanvas'),ctx=canvas.getContext('2d'),keys={};
+function show(id,btn){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');document.querySelectorAll('.tabs button').forEach(b=>b.classList.remove('active'));if(btn)btn.classList.add('active');if(id==='play')draw()}
+function clamp(n){return Math.max(0,Math.min(100,n))}
+function ui(){[['fit',S.fit],['form',S.form],['tac',S.tac],['chem',S.chem]].forEach(([k,v])=>{document.getElementById(k).textContent=v;document.getElementById(k+'b').style.width=v+'%'});document.getElementById('stations').textContent=S.done}
+function log(t){let d=document.createElement('div');d.textContent=t;document.getElementById('log').prepend(d)}
+function station(n,f,fo,t,c,o){if(S.done>=7){log('Tagesplan komplett. Zeit für den Anpfiff.');return}S.fit=clamp(S.fit+f);S.form=clamp(S.form+fo);S.tac=clamp(S.tac+t);S.chem=clamp(S.chem+c);S.done++;S.min+=45;let h=String(Math.floor(S.min/60)).padStart(2,'0'),m=String(S.min%60).padStart(2,'0');document.getElementById('clock').textContent=h+':'+m;document.getElementById('outfit').textContent=o;log(h+':'+m+' · '+n+' abgeschlossen. Outfit: '+o);ui();savePro()}
+function savePro(){let p={name:document.getElementById('name').value,position:document.getElementById('position').value,number:document.getElementById('number').value,outfit:document.getElementById('proOutfit').value,acc:document.getElementById('accessorySelect').value};localStorage.setItem('fcaPro',JSON.stringify(p));document.getElementById('welcome').textContent='Deine Karriere · '+p.name;document.getElementById('posText').textContent=p.position;document.getElementById('numText').textContent=p.number;let col=p.outfit==='Auswärts'?'#178a9d':p.outfit==='Prematch'?'#111820':'#8e1f30';document.getElementById('body').style.background=col;document.getElementById('stageLabel').textContent=p.outfit;document.getElementById('accessory').textContent=p.acc==='AirPods'?'🎧':p.acc==='Kabelkopfhörer'?'🎧':p.acc==='Cap'?'🧢':''}
+function loadPro(){try{let p=JSON.parse(localStorage.getItem('fcaPro'));if(!p)return;for(let [id,val] of [['name',p.name],['position',p.position],['number',p.number],['proOutfit',p.outfit],['accessorySelect',p.acc]])if(val!=null)document.getElementById(id).value=val;savePro()}catch(e){}}
+function toast(t){let x=document.getElementById('toast');x.textContent=t;x.style.display='block';setTimeout(()=>x.style.display='none',1500)}
+function startMatch(){S.playing=true;S.seconds=0;S.my=0;S.opp=0;S.x=640;S.y=560;S.bx=640;S.by=350;S.bvx=0;S.bvy=0;S.hasBall=true;toast('Anpfiff! WASD oder Pfeile zum Bewegen');requestAnimationFrame(loop)}
+function keyDown(k){keys[k]=true;setTimeout(()=>keys[k]=false,120)}
+document.addEventListener('keydown',e=>{keys[e.key]=true;if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight',' '].includes(e.key))e.preventDefault();if(e.key===' '||e.key.toLowerCase()==='e'){if(e.key===' ')shoot();else passBall()}});
+document.addEventListener('keyup',e=>keys[e.key]=false);
+function shoot(){if(!S.playing)return;if(Math.hypot(S.x-S.bx,S.y-S.by)<70||S.hasBall){S.hasBall=false;S.bvx=(S.x<640?7:-7)+(S.x-640)/100;S.bvy=-12;toast('Schuss!');}}
+function passBall(){if(!S.playing)return;if(S.hasBall){S.hasBall=false;S.bvx=9;S.bvy=-2;toast('Pass gespielt')}}
+function update(){if(!S.playing)return;let sp=4;if(keys.w||keys.ArrowUp)S.y-=sp;if(keys.s||keys.ArrowDown)S.y+=sp;if(keys.a||keys.ArrowLeft)S.x-=sp;if(keys.d||keys.ArrowRight)S.x+=sp;S.x=clampCanvasX(S.x);S.y=Math.max(100,Math.min(650,S.y));
+if(S.hasBall){S.bx=S.x;S.by=S.y-18}else{S.bx+=S.bvx;S.by+=S.bvy;S.bvx*=.985;S.bvy*=.985;if(Math.hypot(S.x-S.bx,S.y-S.by)<35&&Math.abs(S.bvx)+Math.abs(S.bvy)<4){S.hasBall=true;S.bvx=S.bvy=0}}
+if(Math.random()<.002&&S.by<130){S.opp++;S.bx=640;S.by=350;S.hasBall=true}
+S.seconds+=1/60;document.getElementById('matchTime').textContent=String(Math.floor(S.seconds/60)).padStart(2,'0')+':'+String(Math.floor(S.seconds%60)).padStart(2,'0');document.getElementById('myScore').textContent=S.my;document.getElementById('oppScore').textContent=S.opp;if(S.seconds>180){S.playing=false;toast('Abpfiff!');log('Match beendet: FCA '+S.my+':'+S.opp+' Gegner.');}}
+function clampCanvasX(x){return Math.max(120,Math.min(1160,x))}
+function draw(){ctx.clearRect(0,0,1280,720);ctx.fillStyle='#143f27';ctx.fillRect(0,0,1280,720);for(let i=0;i<8;i++){ctx.fillStyle=i%2?'#176b39':'#1b7540';ctx.fillRect(i*160,0,160,720)}ctx.strokeStyle='white';ctx.lineWidth=4;ctx.strokeRect(55,55,1170,610);ctx.beginPath();ctx.moveTo(640,55);ctx.lineTo(640,665);ctx.stroke();ctx.beginPath();ctx.arc(640,360,95,0,Math.PI*2);ctx.stroke();ctx.strokeRect(55,250,160,220);ctx.strokeRect(1065,250,160,220);
+ctx.fillStyle='#e8d5b2';ctx.font='bold 28px system-ui';ctx.fillText('FC AUGSBURG',80,100);ctx.fillText('HEIM',1080,100);
+ctx.fillStyle='#f1d6b0';ctx.beginPath();ctx.arc(S.x,S.y-25,14,0,Math.PI*2);ctx.fill();ctx.fillStyle='#8e1f30';ctx.fillRect(S.x-13,S.y-10,26,38);ctx.fillStyle='white';ctx.font='bold 16px system-ui';ctx.fillText(''+(document.getElementById('number').value||9),S.x-6,S.y+15);
+ctx.fillStyle='white';ctx.beginPath();ctx.arc(S.bx,S.by,9,0,Math.PI*2);ctx.fill();ctx.strokeStyle='#ddd';ctx.stroke();
+for(let i=0;i<5;i++){ctx.fillStyle='#4b2b35';ctx.beginPath();ctx.arc(300+i*170,90,15,0,Math.PI*2);ctx.fill()}
+}
+function loop(){update();draw();if(S.playing)requestAnimationFrame(loop)}
+loadPro();ui();log('07:00 · Du kommst mit deinem FCA-Rucksack am Trainingszentrum an.');draw();
+</script>
+</body>
+</html>
